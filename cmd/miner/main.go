@@ -7,7 +7,7 @@ import (
 
 func main() {
 	chain := NewChain()
-	miner := NewMiner(chain, "00")
+	miner := NewMiner(chain, "00000")
 	overview := NewOverview(chain)
 
 	miner.Start()
