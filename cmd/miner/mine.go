@@ -55,6 +55,19 @@ func generateProof(block Block, prefix string) uint64 {
 	return block.Proof
 }
 
+func generateProofFast(block Block) uint64 {
+
+	var sum [32]byte
+
+	for n := uint64(0); sum[0] != 0 || sum[1] != 0 || sum[2] != 0; n++ {
+		block.Proof = n
+		str, _ := json.Marshal(block)
+		sum = sha256.Sum256([]byte(string(str)))
+	}
+
+	return block.Proof
+}
+
 func (m *Miner) mine(w http.ResponseWriter, r *http.Request) {
 	job := Mine{
 		answer: make(chan Mined, 1),
