@@ -19,6 +19,10 @@ func (o *Chain) addBlock(b Block) {
 	o.blocks = append([]Block{b}, o.blocks...)
 }
 
+func (o *Chain) Height() uint64 {
+	return uint64(len(o.blocks))
+}
+
 func (o *Chain) Blocks() []Block {
 	return o.blocks
 }

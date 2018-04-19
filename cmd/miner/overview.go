@@ -10,16 +10,19 @@ import (
 
 type Overview struct {
 	NodeId             string `json:"nodeId"`
-	CurrentBlockHeight int64  `json:"currentBlockHeight"`
+	CurrentBlockHeight uint64 `json:"currentBlockHeight"`
+	chain              *Chain
 }
 
 func (o *Overview) serveJson(w http.ResponseWriter, r *http.Request) {
+	o.CurrentBlockHeight = o.chain.Height()
 	json.NewEncoder(w).Encode(o)
 }
 
-func NewOverview() *Overview {
+func NewOverview(chain *Chain) *Overview {
 	return &Overview{
 		NodeId:             uuid.NewV4().String(),
 		CurrentBlockHeight: 1,
+		chain:              chain,
 	}
 }
