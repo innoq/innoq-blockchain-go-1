@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: miner
+  namespace: miner
+
+---
+
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: miner
+  namespace: miner
+roleRef:
+  kind: ClusterRole
+  name: system-policy
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: miner
+  namespace: miner
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: miner
+  namespace: miner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: miner
+  template:
+    metadata:
+      labels:
+        app: miner
+    spec:
+      serviceAccount: miner
+      containers:
+      - name: miner
+        image: quay.io/pie/miner
+        command: ["/miner"]
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: miner
+  namespace: miner
+spec:
+  ports:
+  - port: 8080
+    name: web
+  selector:
+    app: miner
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: miner
+  namespace: miner
+spec:
+  rules:
+  - host: miner.pie-test.ch.innoq.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: miner
+          servicePort: 8080
