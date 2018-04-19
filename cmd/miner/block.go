@@ -7,7 +7,7 @@ type Transactions struct {
 }
 type Block struct {
 	Index             uint64         `json:"index"`
-	Timestamp         uint64         `json:"timestamp"`
+	Timestamp         int64          `json:"timestamp"`
 	Proof             uint64         `json:"proof"`
 	Transactions      []Transactions `json:"transactions"`
 	PreviousBlockHash string         `json:"previousBlockHash"`
