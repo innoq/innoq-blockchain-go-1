@@ -11,8 +11,8 @@ func TestGenesisBlockYields1917336(t *testing.T) {
 	if err := json.Unmarshal([]byte(GenesisBlock), &block); err != nil {
 		t.Fatal("Unmarshal error")
 	}
-	
-	actual, expected := generateProof(block, "000000"), uint64(1917336)
+
+	actual, expected := generateProofFast(block), uint64(1917336)
 
 	if actual != expected {
 		t.Errorf("% q != %q", actual, expected)

@@ -39,10 +39,13 @@ func generateProof(block Block, prefix string) uint64 {
 func generateProofFast(block Block) uint64 {
 
 	var sum [32]byte
+	block.Proof = ^uint64(0)
+	str, _ := json.Marshal(block)
+	sum = sha256.Sum256([]byte(string(str)))
 
 	for n := uint64(0); sum[0] != 0 || sum[1] != 0 || sum[2] != 0; n++ {
 		block.Proof = n
-		str, _ := json.Marshal(block)
+		str, _ = json.Marshal(block)
 		sum = sha256.Sum256([]byte(string(str)))
 	}
 
