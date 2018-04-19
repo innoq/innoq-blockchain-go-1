@@ -4,23 +4,42 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
 )
 
+type Mine struct {
+	answer chan Mined
+}
+type Mined struct {
+	Message string `json:"message"`
+	Block   Block  `json:"block"`
+}
+
 type Miner struct {
 	chain  *Chain
 	prefix string
+	Queue  chan *Mine
 }
 
 func NewMiner(chain *Chain, prefix string) *Miner {
 	return &Miner{
 		chain:  chain,
 		prefix: prefix,
+		Queue:  make(chan *Mine, 20),
 	}
 }
+
+func (m *Miner) Start() {
+	go func() {
+		for {
+			m.findBlock(<-m.Queue)
+		}
+	}()
+}
+
+func (m *Miner) Stop() {}
 
 func generateProof(block Block, prefix string) uint64 {
 
@@ -53,6 +72,15 @@ func generateProofFast(block Block) uint64 {
 }
 
 func (m *Miner) mine(w http.ResponseWriter, r *http.Request) {
+	job := Mine{
+		answer: make(chan Mined, 1),
+	}
+	m.Queue <- &job
+	a := <-job.answer
+	json.NewEncoder(w).Encode(a)
+}
+
+func (m *Miner) findBlock(mine *Mine) {
 	// get last block
 	lastBlock := *m.chain.LastBlock()
 	// verify hash of last block
@@ -72,5 +100,8 @@ func (m *Miner) mine(w http.ResponseWriter, r *http.Request) {
 	m.chain.addBlock(nextBlock)
 
 	// return result
-	fmt.Fprintf(w, "Hello, miner")
+	mine.answer <- Mined{
+		Message: "hello miner",
+		Block:   nextBlock,
+	}
 }
