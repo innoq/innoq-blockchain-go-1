@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -104,14 +105,23 @@ func (m *Miner) findBlock(mine *Mine) {
 		Transactions:      []Transaction{},
 	}
 
+	startNs := time.Now().UnixNano()
 	// search for valid proof
 	nextBlock.Proof = generateProof(nextBlock, m.prefix)
-	// add block
-	m.chain.addBlock(nextBlock)
+	// seconds needed to find next block
+	timeSec := float64(time.Now().UnixNano()-startNs) / 1e9
 
+	hashesPerSec := "NaN"
+	if timeSec > 0 {
+		hashesPerSec = fmt.Sprintf("%.3f", float64(nextBlock.Proof)/timeSec)
+	}
+
+	// add block to chain
+	m.chain.addBlock(nextBlock)
 	// return result
 	mine.answer <- Mined{
-		Message: "hello miner",
-		Block:   nextBlock,
+		Message: fmt.Sprintf("Mined a new block in %s s. Hashing power: %s hashes/s.",
+			fmt.Sprintf("%.3f", timeSec), hashesPerSec),
+		Block: nextBlock,
 	}
 }
