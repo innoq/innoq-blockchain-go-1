@@ -1,2 +1,4 @@
 .idea/innoq-blockchain-go-1.iml
 .idea/workspace.xml
+
+vendor/
