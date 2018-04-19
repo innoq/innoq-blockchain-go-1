@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -55,17 +56,29 @@ func generateProof(block Block, prefix string) uint64 {
 	return block.Proof
 }
 
+var maxUInt64 = ^uint64(0)
+var maxUInt64String = strconv.FormatUint(maxUInt64, 10)
+
 func generateProofFast(block Block) uint64 {
+
+	block.Proof = maxUInt64
+	initialBlock, _ := json.Marshal(block)
+
+	split := strings.Split(string(initialBlock), maxUInt64String)
 
 	var sum [32]byte
 
-	for n := uint64(0); sum[0] != 0 || sum[1] != 0 || sum[2] != 0; n++ {
-		block.Proof = n
-		str, _ := json.Marshal(block)
-		sum = sha256.Sum256([]byte(string(str)))
+	n := uint64(0)
+	for {
+		s := split[0] + strconv.FormatUint(n, 10) + split[1]
+		sum = sha256.Sum256([]byte(s))
+		if sum[0] == 0 && sum[1] == 0 && sum[2] == 0 {
+			break
+		}
+		n++
 	}
 
-	return block.Proof
+	return n
 }
 
 func (m *Miner) mine(w http.ResponseWriter, r *http.Request) {
