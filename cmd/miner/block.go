@@ -1,9 +1,14 @@
 package main
 
+type Transactions struct {
+	Id        string `json:"id"`
+	Payload   string `json:"payload"`
+	Timestamp uint64 `json:"timestamp"`
+}
 type Block struct {
-	Index             string   `json:"index"`
-	Timestamp         string   `json:"timestamp"`
-	Proof             uint64   `json:"proof"`
-	Transaction       []string `json:"transaction"`
-	PreviousBlockHash string   `json:"previousBlockHash"`
+	Index             uint64         `json:"index"`
+	PreviousBlockHash string         `json:"previousBlockHash"`
+	Proof             uint64         `json:"proof"`
+	Timestamp         uint64         `json:"timestamp"`
+	Transactions      []Transactions `json:"transactions"`
 }
