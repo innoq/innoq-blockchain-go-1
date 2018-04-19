@@ -2,8 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
-	"html"
 	"net/http"
 )
 
@@ -27,8 +25,8 @@ func (o *Chain) Blocks() []Block {
 	return o.blocks
 }
 
-func blocks(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+func (o *Chain) serveJson(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(o.blocks)
 }
 
 func NewChain() *Chain {
