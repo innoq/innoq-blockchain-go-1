@@ -10,6 +10,9 @@ func main() {
 	miner := NewMiner(chain, "00")
 	overview := NewOverview(chain)
 
+	miner.Start()
+	defer miner.Stop()
+
 	http.HandleFunc("/", overview.serveJson)
 
 	http.HandleFunc("/mine", miner.mine)
