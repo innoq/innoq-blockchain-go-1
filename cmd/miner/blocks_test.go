@@ -40,14 +40,14 @@ func TestAddBlock(t *testing.T) {
 func TestFindInEmptyChain(t *testing.T) {
 	chain := NewChain()
 
-	transaction := findTransactionById(chain, "42")
+	transaction := chain.findTransactionById("42")
 
 	if transaction != nil {
 		t.Errorf("Block#findTransactionById(): found transaction in empty chain")
 	}
 
 	// try to find magicGenesisTransactionID
-	transaction = findTransactionById(chain, magicGenesisTransactionID)
+	transaction = chain.findTransactionById(magicGenesisTransactionID)
 
 	if transaction == nil {
 		t.Errorf("%s not found in GenesisBlock", magicGenesisTransactionID)

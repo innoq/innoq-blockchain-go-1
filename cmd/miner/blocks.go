@@ -43,7 +43,7 @@ func NewChain() *Chain {
 	}
 }
 
-func findTransactionById(o *Chain, transactionId string) *Transaction {
+func (o *Chain) findTransactionById(transactionId string) *Transaction {
 	// empty Chain -> return nil
 	if len(o.blocks) == 0 {
 		return nil
