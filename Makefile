@@ -20,7 +20,7 @@ all-image: $(addprefix image-, $(ALL_ARCH))
 image-%: ARCH = $*
 image-%: Dockerfile-%
 	docker build -t quay.io/pie/$(IMAGE):$(VERSION) -f Dockerfile-$(ARCH) .
-	docker push quay.io/pie/$(IMAGE):$(VERSION)
+#	docker push quay.io/pie/$(IMAGE):$(VERSION)
 
 Dockerfile-%: ARCH = $*
 Dockerfile-%: Dockerfile.in
