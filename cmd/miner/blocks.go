@@ -41,3 +41,25 @@ func NewChain() *Chain {
 		blocks: []Block{emptyBlock},
 	}
 }
+
+func findTransactionById(o *Chain, transactionId string) *Transaction {
+	// empty Chain -> return nil
+	if len(o.blocks) == 0 {
+		return nil
+	}
+
+	// iterate over blocks
+	for _, currentBlock := range o.blocks {
+
+		// iterate over transactions in payload
+		for _, currentTransaction := range currentBlock.Transactions {
+			if currentTransaction.Id == transactionId {
+				return &currentTransaction
+			}
+		}
+
+	}
+
+	// seems we didn't find anything...
+	return nil
+}
