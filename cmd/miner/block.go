@@ -4,6 +4,7 @@ type Transaction struct {
 	Id        string `json:"id"`
 	Timestamp uint64 `json:"timestamp"`
 	Payload   string `json:"payload"`
+	Confirmed bool   `json:"confirmed"`
 }
 type Block struct {
 	Index             uint64        `json:"index"`
