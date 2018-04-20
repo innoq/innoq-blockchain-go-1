@@ -91,6 +91,7 @@ func (m *Miner) mine(w http.ResponseWriter, r *http.Request) {
 	}
 	m.Queue <- &job
 	a := <-job.answer
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(a)
 }
 
