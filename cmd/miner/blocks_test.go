@@ -34,3 +34,23 @@ func TestAddBlock(t *testing.T) {
 		t.Errorf("Chain#addBlock(): Slice didn't grow.")
 	}
 }
+
+// testing findTransactionById (our blockchain query function)
+
+func TestFindInEmptyChain(t *testing.T) {
+	chain := NewChain()
+
+	transaction := chain.findTransactionById("42")
+
+	if transaction != nil {
+		t.Errorf("Block#findTransactionById(): found transaction in empty chain")
+	}
+
+	// try to find magicGenesisTransactionID
+	transaction = chain.findTransactionById(magicGenesisTransactionID)
+
+	if transaction == nil {
+		t.Errorf("%s not found in GenesisBlock", magicGenesisTransactionID)
+	}
+
+}
