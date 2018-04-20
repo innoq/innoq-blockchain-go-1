@@ -95,7 +95,6 @@ func (m *Miner) mine(w http.ResponseWriter, r *http.Request) {
 		opentracing.HTTPHeadersCarrier(r.Header))
 
 	span := opentracing.StartSpan("mine_handler", ext.RPCServerOption(wireContext))
-	//span.Log("mine")
 	defer span.Finish()
 
 	job := Mine{
