@@ -5,6 +5,10 @@ import (
 	"net/http"
 )
 
+type Ui struct {
+	overview *Overview
+}
+
 var tmpl = `<!DOCTYPE html>
 <html>
 <head>
@@ -34,7 +38,11 @@ var tmpl = `<!DOCTYPE html>
 </style>
 <body>
     <div class="box">
-        <div class="mbottom25">
+		<div class="mbottom25">
+			<span>Node ID: {{.NodeId}}</span><br>
+			<span>Current block height: {{.CurrentBlockHeight}}</span>
+		</div>
+		<div class="mbottom25">
             <a href="/" target="_blank">
                 Get Details</a>
         </div>
@@ -69,8 +77,14 @@ var tmpl = `<!DOCTYPE html>
 
 `
 
-func GetIndex(w http.ResponseWriter, r *http.Request) {
-	t := template.New("main") //name of the template is main
-	t, _ = t.Parse(tmpl)      // parsing of template string
-	t.Execute(w, "")
+func NewUi(overview *Overview) *Ui {
+	return &Ui{
+		overview: overview,
+	}
+}
+
+func (u *Ui) GetIndex(w http.ResponseWriter, r *http.Request) {
+	t := template.New("main")
+	t, _ = t.Parse(tmpl)
+	t.Execute(w, u.overview)
 }

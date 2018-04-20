@@ -17,6 +17,7 @@ func main() {
 	chain := NewChain()
 	miner := NewMiner(chain, events, "00000")
 	overview := NewOverview(chain)
+	ui := NewUi(overview)
 	transactions := NewTransactions(*events)
 
 	miner.Start()
@@ -34,7 +35,7 @@ func main() {
 
 	r.HandleFunc("/transactions/{id}", transactions.serveJson)
 
-	r.HandleFunc("/ui", GetIndex)
+	r.HandleFunc("/ui", ui.GetIndex)
 
 	http.Handle("/", r)
 	log.Fatal(http.ListenAndServe(":8080", nil))
