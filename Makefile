@@ -1,4 +1,3 @@
-.PHONY: install all-image image-%
 
 # The binary to build (just the basename).
 IMAGE := miner
@@ -14,8 +13,10 @@ VERSION ?= "latest"
 # go source files without tests, ignore vendor directory
 SRC = $(shell find . -type f -name '*.go' -not -name '*_test.go' -not -path './vendor/*')
 
+.PHONY: all-image
 all-image: $(addprefix image-, $(ALL_ARCH))
 
+.PHONY: image-%
 image-%: ARCH = $*
 image-%: Dockerfile-%
 	docker build -t quay.io/pie/$(IMAGE):$(VERSION) -f Dockerfile-$(ARCH) .
@@ -32,9 +33,11 @@ Dockerfile-%: Dockerfile.in
 Gopkg.toml:
 	dep init
 
+.PHONY: vendor
 vendor: Gopkg.toml
 	dep ensure
 
+.PHONY: install
 install: vendor
 	go install ./...
 
