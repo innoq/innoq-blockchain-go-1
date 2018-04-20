@@ -20,18 +20,20 @@ type Mined struct {
 }
 
 type Miner struct {
-	chain  *Chain
-	prefix string
-	events *Events
-	Queue  chan *Mine
+	chain        *Chain
+	events       *Events
+	transactions *Transactions
+	prefix       string
+	Queue        chan *Mine
 }
 
-func NewMiner(chain *Chain, events *Events, prefix string) *Miner {
+func NewMiner(chain *Chain, events *Events, trasactions *Transactions, prefix string) *Miner {
 	return &Miner{
-		chain:  chain,
-		prefix: prefix,
-		events: events,
-		Queue:  make(chan *Mine, 20),
+		chain:        chain,
+		events:       events,
+		transactions: trasactions,
+		prefix:       prefix,
+		Queue:        make(chan *Mine, 20),
 	}
 }
 
