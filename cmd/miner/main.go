@@ -21,7 +21,6 @@ func main() {
 
 	overview := NewOverview(chain)
 	ui := NewUi(overview)
-	transactions := NewTransactions(*events)
 
 	miner.Start()
 	defer miner.Stop()
