@@ -84,6 +84,7 @@ func NewUi(overview *Overview) *Ui {
 }
 
 func (u *Ui) GetIndex(w http.ResponseWriter, r *http.Request) {
+	u.overview.CurrentBlockHeight = u.overview.chain.Height()
 	t := template.New("main")
 	t, _ = t.Parse(tmpl)
 	t.Execute(w, u.overview)
