@@ -30,27 +30,14 @@ func (o *Chain) serveJson(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewChain() *Chain {
-	genesis := `{
-    "index": 1,
-    "timestamp": 0,
-    "proof": 1917336,
-    "transactions": [
-        {
-            "id": "b3c973e2-db05-4eb5-9668-3e81c7389a6d",
-            "timestamp": 0,
-            "payload": "I am Heribert Innoq"
-        }
-    ],
-    "previousBlockHash": "0"
-	}`
 
-	byt := []byte(genesis)
-	dat := Block{}
-	if err := json.Unmarshal(byt, &dat); err != nil {
+	genesis := []byte(GenesisBlock)
+	emptyBlock := Block{}
+	if err := json.Unmarshal(genesis, &emptyBlock); err != nil {
 		panic(err)
 	}
 
 	return &Chain{
-		blocks: []Block{dat},
+		blocks: []Block{emptyBlock},
 	}
 }
