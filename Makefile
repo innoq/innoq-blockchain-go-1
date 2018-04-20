@@ -38,5 +38,6 @@ vendor: Gopkg.toml
 install: vendor
 	go install ./...
 
+.PHONY: run
 run:
 	go run $(SRC)
