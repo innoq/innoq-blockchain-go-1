@@ -26,6 +26,23 @@ type Transactions struct {
 	events Events
 }
 
+func (transactions *Transactions) Confirm(confirmedTransactions []Transaction) {
+	b := transactions.pool[:0]
+	for _, t := range transactions.pool {
+		found := false
+		for _, ct := range confirmedTransactions {
+			if ct == t {
+				found = true
+				break
+			}
+		}
+		if !found {
+			b = append(b, t)
+		}
+	}
+	transactions.pool = b
+}
+
 func (transactions *Transactions) Add(transaction Transaction) {
 	transactions.pool = append([]Transaction{transaction}, transactions.pool...)
 	transactions.events.SendNewTransactionEvent(&transaction)

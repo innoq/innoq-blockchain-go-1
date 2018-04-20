@@ -55,3 +55,22 @@ func TestTransactionsPop(t *testing.T) {
 		t.Errorf("Transactions#pop(): Number of transactions should be 0.")
 	}
 }
+
+func TestTransactionsConfirm(t *testing.T) {
+	events := NewEvents()
+	events.Start()
+	transactions := NewTransactions(events)
+
+	for i := 0; i < 10; i++ {
+		payload := `{"payload": "Arnulf Beckenbauer"}`
+		transaction, _ := transactions.Create(strings.NewReader(payload))
+		transactions.Add(*transaction)
+	}
+
+	id := transactions.pool[0].Id
+	transactions.Confirm([]Transaction{transactions.pool[0]})
+
+	if transactions.pool[0].Id == id {
+		t.Errorf("Transactions#Confirm(): Transaction was found in transactions pool, but should've been confirmed.")
+	}
+}

@@ -124,6 +124,8 @@ func (m *Miner) findBlock(mine *Mine) {
 
 	// add block to chain
 	m.chain.addBlock(nextBlock)
+	// confit´rm transactions
+	m.transactions.Confirm(nextBlock.Transactions)
 	// send event
 	m.events.SendNewBlockEvent(&nextBlock)
 	// return result
