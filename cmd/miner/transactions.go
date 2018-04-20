@@ -10,6 +10,13 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
 type Payload struct {
 	Payload string `json:"payload"`
 }
@@ -22,6 +29,10 @@ type Transactions struct {
 func (transactions *Transactions) Add(transaction Transaction) {
 	transactions.pool = append([]Transaction{transaction}, transactions.pool...)
 	transactions.events.SendNewTransactionEvent(&transaction)
+}
+
+func (transactions *Transactions) Pop() []Transaction {
+	return transactions.pool[:min(4, len(transactions.pool))]
 }
 
 func (transactions *Transactions) Get(id string) *Transaction {
@@ -65,9 +76,9 @@ func (transactions *Transactions) serveJson(w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(transactions.Get(vars["id"]))
 }
 
-func NewTransactions(events Events) *Transactions {
+func NewTransactions(events *Events) *Transactions {
 	return &Transactions{
 		pool:   []Transaction{},
-		events: events,
+		events: *events,
 	}
 }
