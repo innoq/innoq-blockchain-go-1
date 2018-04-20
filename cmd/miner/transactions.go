@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -39,6 +41,14 @@ func (transactions *Transactions) Create(payload string) *Transaction {
 }
 
 func (transactions *Transactions) Post(w http.ResponseWriter, r *http.Request) {
+
+	wireContext, _ := opentracing.GlobalTracer().Extract(
+		opentracing.HTTPHeaders,
+		opentracing.HTTPHeadersCarrier(r.Header))
+
+	span := opentracing.StartSpan("Transactions:Post", ext.RPCServerOption(wireContext))
+	defer span.Finish()
+
 	if r.Method == "POST" {
 		body, _ := ioutil.ReadAll(r.Body)
 		transaction := transactions.Create(string(body))
@@ -50,6 +60,14 @@ func (transactions *Transactions) Post(w http.ResponseWriter, r *http.Request) {
 }
 
 func (transactions *Transactions) serveJson(w http.ResponseWriter, r *http.Request) {
+
+	wireContext, _ := opentracing.GlobalTracer().Extract(
+		opentracing.HTTPHeaders,
+		opentracing.HTTPHeadersCarrier(r.Header))
+
+	span := opentracing.StartSpan("Transactions:serveJson", ext.RPCServerOption(wireContext))
+	defer span.Finish()
+
 	vars := mux.Vars(r)
 	json.NewEncoder(w).Encode(transactions.Get(vars["id"]))
 }

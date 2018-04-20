@@ -3,6 +3,9 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+
+	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 )
 
 type Chain struct {
@@ -26,6 +29,14 @@ func (o *Chain) Blocks() []Block {
 }
 
 func (o *Chain) serveJson(w http.ResponseWriter, r *http.Request) {
+
+	wireContext, _ := opentracing.GlobalTracer().Extract(
+		opentracing.HTTPHeaders,
+		opentracing.HTTPHeadersCarrier(r.Header))
+
+	span := opentracing.StartSpan("Chain:serveJson", ext.RPCServerOption(wireContext))
+	defer span.Finish()
+
 	json.NewEncoder(w).Encode(o.blocks)
 }
 
