@@ -1,9 +1,12 @@
 package main
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestNewTransactions(t *testing.T) {
-	transactions := NewTransactions()
+	transactions := NewTransactions(NewEvents())
 	if len(transactions.pool) != 0 {
 		t.Errorf("NewTransactions(): Failed, couldn't find pool.")
 	}
@@ -11,12 +14,8 @@ func TestNewTransactions(t *testing.T) {
 
 func TestTransactionsCreate(t *testing.T) {
 	payload := `{"payload": "Arnulf Beckenbauer"}`
-	transactions := NewTransactions()
-	transaction := transactions.Create(payload)
-
-	if transaction.Confirmed {
-		t.Errorf("Transactions#Create(): Expected Confirmed to be false, was true.")
-	}
+	transactions := NewTransactions(NewEvents())
+	transaction, _ := transactions.Create(strings.NewReader(payload))
 
 	if transaction.Payload != payload {
 		t.Errorf("Transactions#Create(): Payload wasn't defined.")
@@ -25,8 +24,8 @@ func TestTransactionsCreate(t *testing.T) {
 
 func TestTransactionsAdd(t *testing.T) {
 	payload := `{"payload": "Arnulf Beckenbauer"}`
-	transactions := NewTransactions()
-	transaction := transactions.Create(payload)
+	transactions := NewTransactions(NewEvents())
+	transaction, _ := transactions.Create(strings.NewReader(payload))
 	transactions.Add(*transaction)
 
 	if transactions.pool[0].Id != transaction.Id {
@@ -36,13 +35,23 @@ func TestTransactionsAdd(t *testing.T) {
 
 func TestTransactionsGet(t *testing.T) {
 	payload := `{"payload": "Arnulf Beckenbauer"}`
-	transactions := NewTransactions()
-	transaction := transactions.Create(payload)
+	transactions := NewTransactions(NewEvents())
+	transaction, _ := transactions.Create(strings.NewReader(payload))
 	transactions.Add(*transaction)
 
 	actual := transactions.Get(transaction.Id)
 
 	if actual.Id != transaction.Id {
 		t.Errorf("Transactions#Add(): Couldn't find transaction in transactions pool")
+	}
+}
+
+func TestTransactionsPop(t *testing.T) {
+	events := NewEvents()
+	transactions := NewTransactions(events)
+	ts := transactions.Pop()
+
+	if len(ts) != 0 {
+		t.Errorf("Transactions#pop(): Number of transactions should be 0.")
 	}
 }

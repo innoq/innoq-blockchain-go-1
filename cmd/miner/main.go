@@ -29,7 +29,7 @@ func main() {
 	chain := NewChain()
 	miner := NewMiner(chain, events, "00000")
 	overview := NewOverview(chain)
-	transactions := NewTransactions(*events)
+	transactions := NewTransactions(events)
 
 	miner.Start()
 	defer miner.Stop()
