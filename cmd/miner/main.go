@@ -3,9 +3,13 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
+	r := mux.NewRouter()
+
 	events := NewEvents()
 	events.Start()
 	defer events.Stop()
@@ -13,17 +17,23 @@ func main() {
 	chain := NewChain()
 	miner := NewMiner(chain, events, "00000")
 	overview := NewOverview(chain)
+	transactions := NewTransactions()
 
 	miner.Start()
 	defer miner.Stop()
 
-	http.HandleFunc("/", overview.serveJson)
+	r.HandleFunc("/", overview.serveJson)
 
-	http.HandleFunc("/mine", miner.mine)
+	r.HandleFunc("/mine", miner.mine)
 
-	http.HandleFunc("/blocks", chain.serveJson)
+	r.HandleFunc("/blocks", chain.serveJson)
 
-	http.Handle("/events", events)
+	r.Handle("/events", events)
 
+	r.HandleFunc("/transactions", transactions.Post)
+
+	r.HandleFunc("/transactions/{id}", transactions.serveJson)
+
+	http.Handle("/", r)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
