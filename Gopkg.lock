@@ -2,6 +2,18 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/manucorporat/sse"
+  packages = ["."]
+  revision = "ee05b128a739a0fb76c7ebd3ae4810c1de808d6d"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/ouven/ssehandler-go"
+  packages = ["."]
+  revision = "662a9ee5d87dc3614f748951e403338d02b4af01"
+
+[[projects]]
   name = "github.com/satori/go.uuid"
   packages = ["."]
   revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
@@ -10,6 +22,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e34151ee34ca3b36f1e58ff0eedfdeaab932df9d0bad56924b668c296e8e1163"
+  inputs-digest = "1fdcab1ce919dc516bc0691f8a95ccce6db6acc2a49c470bf618c3b088c062e4"
   solver-name = "gps-cdcl"
   solver-version = 1
