@@ -17,7 +17,7 @@ func TestTransactionsCreate(t *testing.T) {
 	transactions := NewTransactions(NewEvents())
 	transaction, _ := transactions.Create(strings.NewReader(payload))
 
-	if transaction.Payload != payload {
+	if transaction.Payload != "Arnulf Beckenbauer" {
 		t.Errorf("Transactions#Create(): Payload wasn't defined.")
 	}
 }
