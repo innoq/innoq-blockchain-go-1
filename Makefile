@@ -1,4 +1,3 @@
-.PHONY: install all-image image-%
 
 # The binary to build (just the basename).
 IMAGE := miner
@@ -11,12 +10,17 @@ PKG ?= github.com/innoq-blockchain-go-1
 
 VERSION ?= "latest"
 
+# go source files without tests, ignore vendor directory
+SRC = $(shell find . -type f -name '*.go' -not -name '*_test.go' -not -path './vendor/*')
+
+.PHONY: all-image
 all-image: $(addprefix image-, $(ALL_ARCH))
 
+.PHONY: image-%
 image-%: ARCH = $*
 image-%: Dockerfile-%
 	docker build -t quay.io/pie/$(IMAGE):$(VERSION) -f Dockerfile-$(ARCH) .
-	docker push quay.io/pie/$(IMAGE):$(VERSION)
+#	docker push quay.io/pie/$(IMAGE):$(VERSION)
 
 Dockerfile-%: ARCH = $*
 Dockerfile-%: Dockerfile.in
@@ -29,8 +33,14 @@ Dockerfile-%: Dockerfile.in
 Gopkg.toml:
 	dep init
 
+.PHONY: vendor
 vendor: Gopkg.toml
 	dep ensure
 
+.PHONY: install
 install: vendor
 	go install ./...
+
+.PHONY: run
+run:
+	go run $(SRC)

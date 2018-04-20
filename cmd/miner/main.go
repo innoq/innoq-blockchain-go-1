@@ -7,7 +7,6 @@ import (
 	thislog "github.com/innoq-blockchain-go-1/pkg/log"
 	"github.com/innoq-blockchain-go-1/pkg/tracing"
 	opentracing "github.com/opentracing/opentracing-go"
-	sse "github.com/ouven/ssehandler-go"
 	"github.com/uber/jaeger-lib/metrics/go-kit"
 	"github.com/uber/jaeger-lib/metrics/go-kit/expvar"
 	"go.uber.org/zap"
@@ -20,16 +19,16 @@ func main() {
 	metricsFactory := xkit.Wrap("", expvar.NewFactory(10))
 	opentracing.InitGlobalTracer(tracing.Init("Miner", metricsFactory.Namespace("miner", nil), logfac))
 
+	events := NewEvents()
+	events.Start()
+	defer events.Stop()
+
 	chain := NewChain()
-	miner := NewMiner(chain, "0000")
+	miner := NewMiner(chain, events, "00000")
 	overview := NewOverview(chain)
 
 	miner.Start()
 	defer miner.Stop()
-
-	ssehandler := sse.NewSSEHandler()
-	ssehandler.Start()
-	defer ssehandler.Stop()
 
 	http.HandleFunc("/", overview.serveJson)
 
@@ -37,7 +36,7 @@ func main() {
 
 	http.HandleFunc("/blocks", chain.serveJson)
 
-	http.Handle("/events", ssehandler)
+	http.Handle("/events", events)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

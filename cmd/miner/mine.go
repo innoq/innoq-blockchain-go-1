@@ -25,13 +25,15 @@ type Mined struct {
 type Miner struct {
 	chain  *Chain
 	prefix string
+	events *Events
 	Queue  chan *Mine
 }
 
-func NewMiner(chain *Chain, prefix string) *Miner {
+func NewMiner(chain *Chain, events *Events, prefix string) *Miner {
 	return &Miner{
 		chain:  chain,
 		prefix: prefix,
+		events: events,
 		Queue:  make(chan *Mine, 20),
 	}
 }
@@ -131,6 +133,8 @@ func (m *Miner) findBlock(mine *Mine) {
 
 	// add block to chain
 	m.chain.addBlock(nextBlock)
+	// send event
+	m.events.SendNewBlockEvent(&nextBlock)
 	// return result
 	mine.answer <- Mined{
 		Message: fmt.Sprintf("Mined a new block in %s s. Hashing power: %s hashes/s.",
