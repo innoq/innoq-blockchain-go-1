@@ -3,21 +3,19 @@ package main
 import (
 	"log"
 	"net/http"
-
-	sse "github.com/ouven/ssehandler-go"
 )
 
 func main() {
+	events := NewEvents()
+	events.Start()
+	defer events.Stop()
+
 	chain := NewChain()
-	miner := NewMiner(chain, "00000")
+	miner := NewMiner(chain, events, "00000")
 	overview := NewOverview(chain)
 
 	miner.Start()
 	defer miner.Stop()
-
-	ssehandler := sse.NewSSEHandler()
-	ssehandler.Start()
-	defer ssehandler.Stop()
 
 	http.HandleFunc("/", overview.serveJson)
 
@@ -25,7 +23,7 @@ func main() {
 
 	http.HandleFunc("/blocks", chain.serveJson)
 
-	http.Handle("/events", ssehandler)
+	http.Handle("/events", events)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
