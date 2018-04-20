@@ -11,11 +11,13 @@ import (
 )
 
 type Transactions struct {
-	pool []Transaction
+	pool   []Transaction
+	events Events
 }
 
 func (transactions *Transactions) Add(transaction Transaction) {
 	transactions.pool = append([]Transaction{transaction}, transactions.pool...)
+	transactions.events.SendNewTransactionEvent(&transaction)
 }
 
 func (transactions *Transactions) Get(id string) *Transaction {
@@ -52,8 +54,9 @@ func (transactions *Transactions) serveJson(w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(transactions.Get(vars["id"]))
 }
 
-func NewTransactions() *Transactions {
+func NewTransactions(events Events) *Transactions {
 	return &Transactions{
-		pool: []Transaction{},
+		pool:   []Transaction{},
+		events: events,
 	}
 }
