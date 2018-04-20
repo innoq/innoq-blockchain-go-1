@@ -11,6 +11,9 @@ PKG ?= github.com/innoq-blockchain-go-1
 
 VERSION ?= "latest"
 
+# go source files without tests, ignore vendor directory
+SRC = $(shell find . -type f -name '*.go' -not -name '*_test.go' -not -path './vendor/*')
+
 all-image: $(addprefix image-, $(ALL_ARCH))
 
 image-%: ARCH = $*
@@ -34,3 +37,6 @@ vendor: Gopkg.toml
 
 install: vendor
 	go install ./...
+
+run:
+	go run $(SRC)
