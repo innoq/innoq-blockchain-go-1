@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 
@@ -11,6 +11,10 @@ import (
 	"github.com/opentracing/opentracing-go/ext"
 	uuid "github.com/satori/go.uuid"
 )
+
+type Payload struct {
+	Payload string `json:"payload"`
+}
 
 type Transactions struct {
 	pool   []Transaction
@@ -31,13 +35,18 @@ func (transactions *Transactions) Get(id string) *Transaction {
 	return nil
 }
 
-func (transactions *Transactions) Create(payload string) *Transaction {
+func (transactions *Transactions) Create(payload io.Reader) (*Transaction, error) {
+
+	emptyPayload := Payload{}
+	if err := json.NewDecoder(payload).Decode(&emptyPayload); err != nil {
+		return nil, err
+	}
+
 	return &Transaction{
 		Id:        uuid.NewV4().String(),
 		Timestamp: uint64(time.Now().Unix()),
-		Payload:   payload,
-		Confirmed: false,
-	}
+		Payload:   emptyPayload.Payload,
+	}, nil
 }
 
 func (transactions *Transactions) Post(w http.ResponseWriter, r *http.Request) {
@@ -50,10 +59,12 @@ func (transactions *Transactions) Post(w http.ResponseWriter, r *http.Request) {
 	defer span.Finish()
 
 	if r.Method == "POST" {
-		body, _ := ioutil.ReadAll(r.Body)
-		transaction := transactions.Create(string(body))
-		transactions.Add(*transaction)
-		json.NewEncoder(w).Encode(transaction)
+		if transaction, err := transactions.Create(r.Body); err != nil {
+			http.Error(w, err.Error(), 400)
+		} else {
+			transactions.Add(*transaction)
+			json.NewEncoder(w).Encode(transaction)
+		}
 	} else {
 		json.NewEncoder(w).Encode(transactions.pool)
 	}

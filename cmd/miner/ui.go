@@ -1,4 +1,11 @@
-<!DOCTYPE html>
+package main
+
+import (
+	"html/template"
+	"net/http"
+)
+
+var tmpl = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -28,28 +35,28 @@
 <body>
     <div class="box">
         <div class="mbottom25">
-            <a href="http://localhost:8080" target="_blank">
+            <a href="/" target="_blank">
                 Get Details</a>
         </div>
 
         <div class="mbottom25">
-            <a href="http://localhost:8080/blocks" target="_blank">
+            <a href="/blocks" target="_blank">
                 Get Blocks</a>
         </div>
 
         <div class="mbottom25">
-            <a href="http://localhost:8080/transactions" target="_blank">
+            <a href="/transactions" target="_blank">
                 Get Transactions</a>
         </div>
 
         <div class="mbottom50">
-            <a href="http://localhost:8080/mine" target="_blank">
+            <a href="/mine" target="_blank">
                 Mine A Block</a>
         </div>
 
         <span><b>Create Transaction</b></span><br>
         <form class="mbottom25 mtop10" method="post"
-            action="http://localhost:8080/transcations">
+            action="/transcations">
 
             <span>Payload</span><br>
             <input type="text" name="payload">
@@ -59,3 +66,11 @@
 </body>
 
 </html>
+
+`
+
+func GetIndex(w http.ResponseWriter, r *http.Request) {
+	t := template.New("main") //name of the template is main
+	t, _ = t.Parse(tmpl)      // parsing of template string
+	t.Execute(w, "")
+}
