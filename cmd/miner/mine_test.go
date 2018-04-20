@@ -18,7 +18,7 @@ func TestGenesisBlockYields1917336(t *testing.T) {
 		t.Errorf("%d != %d", actual, expected)
 	}
 
-	actual, expected = generateProofFast(block), uint64(1917336)
+	actual, expected = generateProofFast(block, 3), uint64(1917336)
 
 	if actual != expected {
 		t.Errorf("%d != %d", actual, expected)
@@ -39,7 +39,7 @@ func TestMoreBlocks(t *testing.T) {
 		block2 := block
 
 		actual := generateProof(block, "0000")
-		expected := generateProofFast(block2)
+		expected := generateProofFast(block2, 2)
 
 		if actual != expected {
 			t.Errorf("%d != %d", actual, expected)

@@ -60,26 +60,27 @@ func generateProof(block Block, prefix string) uint64 {
 var maxUInt64 = ^uint64(0)
 var maxUInt64String = strconv.FormatUint(maxUInt64, 10)
 
-func generateProofFast(block Block) uint64 {
+func generateProofFast(block Block, leadingZeroBytes int) uint64 {
 
 	block.Proof = maxUInt64
 	initialBlock, _ := json.Marshal(block)
 
 	split := strings.Split(string(initialBlock), maxUInt64String)
 
-	var sum [32]byte
-
 	n := uint64(0)
 	for {
 		s := split[0] + strconv.FormatUint(n, 10) + split[1]
-		sum = sha256.Sum256([]byte(s))
-		if sum[0] == 0 && sum[1] == 0 && sum[2] == 0 {
-			break
+		sum := sha256.Sum256([]byte(s))
+
+		bool := true
+		for _, e := range sum[:leadingZeroBytes] {
+			bool = bool && (e == 0)
+		}
+		if bool {
+			return n
 		}
 		n++
 	}
-
-	return n
 }
 
 func (m *Miner) mine(w http.ResponseWriter, r *http.Request) {
@@ -107,7 +108,7 @@ func (m *Miner) findBlock(mine *Mine) {
 
 	startNs := time.Now().UnixNano()
 	// search for valid proof
-	nextBlock.Proof = generateProof(nextBlock, m.prefix)
+	nextBlock.Proof = generateProofFast(nextBlock, len(m.prefix)/2)
 	// seconds needed to find next block
 	timeSec := float64(time.Now().UnixNano()-startNs) / 1e9
 
