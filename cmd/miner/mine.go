@@ -108,7 +108,7 @@ func (m *Miner) findBlock(mine *Mine) {
 		Index:             lastBlock.Index + 1,
 		PreviousBlockHash: lastBlockHash,
 		Timestamp:         time.Now().Unix(),
-		Transactions:      []Transaction{},
+		Transactions:      m.transactions.Pop(),
 	}
 
 	startNs := time.Now().UnixNano()
