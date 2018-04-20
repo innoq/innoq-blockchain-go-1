@@ -14,10 +14,12 @@ func main() {
 	events.Start()
 	defer events.Stop()
 
-	chain := NewChain()
-	miner := NewMiner(chain, events, "00000")
-	overview := NewOverview(chain)
 	transactions := NewTransactions(events)
+
+	chain := NewChain()
+	miner := NewMiner(chain, events, transactions, "00000")
+
+	overview := NewOverview(chain)
 
 	miner.Start()
 	defer miner.Stop()

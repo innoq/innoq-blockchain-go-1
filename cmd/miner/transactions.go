@@ -64,15 +64,18 @@ func (transactions *Transactions) Post(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), 400)
 		} else {
 			transactions.Add(*transaction)
+			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(transaction)
 		}
 	} else {
+		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(transactions.pool)
 	}
 }
 
 func (transactions *Transactions) serveJson(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(transactions.Get(vars["id"]))
 }
 

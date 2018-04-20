@@ -26,6 +26,7 @@ func (o *Chain) Blocks() []Block {
 }
 
 func (o *Chain) serveJson(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(o.blocks)
 }
 
