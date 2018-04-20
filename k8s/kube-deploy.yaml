@@ -42,6 +42,11 @@ spec:
       - name: miner
         image: quay.io/pie/miner
         command: ["/miner"]
+      - name: jaeger-agent
+        image: jaegertracing/jaeger-agent
+        command:
+        - "/go/bin/agent-linux"
+        - "--collector.host-port=jaeger-collector.miner:14267"
 
 ---
 
@@ -75,3 +80,10 @@ spec:
         backend:
           serviceName: miner
           servicePort: 8080
+  - host: minertracing.pie-test.ch.innoq.io
+    http:
+      paths:
+       - path: /
+         backend:
+           serviceName: jaeger-query
+           servicePort: 80

@@ -9,6 +9,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 )
 
 type Mine struct {
@@ -84,6 +87,15 @@ func generateProofFast(block Block, leadingZeroBytes int) uint64 {
 }
 
 func (m *Miner) mine(w http.ResponseWriter, r *http.Request) {
+
+	wireContext, _ := opentracing.GlobalTracer().Extract(
+		opentracing.HTTPHeaders,
+		opentracing.HTTPHeadersCarrier(r.Header))
+
+	span := opentracing.StartSpan("mine_handler", ext.RPCServerOption(wireContext))
+	//span.Log("mine")
+	defer span.Finish()
+
 	job := Mine{
 		answer: make(chan Mined, 1),
 	}
