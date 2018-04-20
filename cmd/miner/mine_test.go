@@ -33,7 +33,7 @@ func TestMoreBlocks(t *testing.T) {
 		PreviousBlockHash: "01010101",
 	}
 
-	for i := 0; i < 1; i++ {
+	for i := 0; i < 10; i++ {
 		block.Index = uint64(i)
 
 		block2 := block
