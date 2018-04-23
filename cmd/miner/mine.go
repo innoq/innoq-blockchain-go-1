@@ -89,6 +89,7 @@ func generateProofFast(block Block, leadingZeroBytes int) uint64 {
 }
 
 func (m *Miner) mine(w http.ResponseWriter, r *http.Request) {
+<<<<<<< Updated upstream
 
 	wireContext, _ := opentracing.GlobalTracer().Extract(
 		opentracing.HTTPHeaders,
@@ -97,6 +98,8 @@ func (m *Miner) mine(w http.ResponseWriter, r *http.Request) {
 	span := opentracing.StartSpan("mine_handler", ext.RPCServerOption(wireContext))
 	defer span.Finish()
 
+=======
+>>>>>>> Stashed changes
 	job := Mine{
 		answer: make(chan Mined, 1),
 	}
