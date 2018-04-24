@@ -19,8 +19,7 @@ all-image: $(addprefix image-, $(ALL_ARCH))
 .PHONY: image-%
 image-%: ARCH = $*
 image-%: Dockerfile-%
-	docker build -t quay.io/pie/$(IMAGE):$(VERSION) -f Dockerfile-$(ARCH) .
-#	docker push quay.io/pie/$(IMAGE):$(VERSION)
+	docker build -t $(IMAGE):$(VERSION) -f Dockerfile-$(ARCH) .
 
 Dockerfile-%: ARCH = $*
 Dockerfile-%: Dockerfile.in
@@ -42,5 +41,5 @@ install: vendor
 	go install ./...
 
 .PHONY: run
-run:
+run: vendor
 	go run $(SRC)
